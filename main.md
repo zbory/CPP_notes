@@ -1,48 +1,84 @@
+
+- [Templates](#templates)
+	- [Function templates](#function-templates)
+	- [Class templates](#class-templates)
+- [constexpr](#constexpr)
+- [Working with serialized data](#working-with-serialized-data)
+- [Tervezési minták](#tervezési-minták)
+	- [Singleton](#singleton)
+
+
 ## Templates
 ### Function templates
-template<typename T>, template<class T>
-typename and class means the same, they are interchangeable
+
+* **typename** and **class** means the same, they are interchangeable,
 T is just a placeholder
-variadic template: a class or function template that supports an arbitrary number of arguments
-ellipsis (...):
-for a function that takes a variable number of parameters, eg: findAverage(int count, ...)
-functions that use ellipsis must have at least one non-ellipsis parameter, the ellipsis must always be the last parameter
-include the cstdarg header, this header defines va_list, va_arg, va_start, and va_end, which are macros that we need to use to access the parameters
+
+```cpp
+template<typename T>
+
+template<class T>
+```
+
+* **variadic template**: a class or function template that supports an arbitrary number of arguments
+* **ellipsis (...)**:
+for a function that takes a variable number of parameters, eg: findAverage(int count, ...)<br>
+functions that use ellipsis must have at least one non-ellipsis parameter, the ellipsis must always be the last parameter<br>
+include the cstdarg header, this header defines **va_list**, **va_arg**, **va_start** and **va_end** which are macros that we need to use to access the parameters<br>
 https://www.learncpp.com/cpp-tutorial/ellipsis-and-why-to-avoid-them/
 
 
-templates usually have to be defined in a header file (recommended)
-no inline necessary (?)
-for functions, specifying the type is not mandatory
+* templates usually have to be defined in a header file (recommended)
+  * no inline necessary (?)<br>
+* for functions, specifying the type is not mandatory, it will be (if possible) deduced from the argument type<br>
+  
+```cpp
+int a,b;
+
 myMax<int>(a,b)
 myMax(a,b)
+```
+
+* C++20 introduces this usage, this is also/still a template definition
+
+```cpp
 void print(const auto& collection)
-C++20 introduces this usage, this is also/still a template definition
+```
+
+* Concepts
+
+```cpp
 template<typename T>
 T myMax(T a, T b) {
 	return b < a ? a : b;
 }
-there are two constraints in the example implicitly:
-operator < (returning bool)
-copy/move constructor
-to explicitly define the constraints: Concepts (C++20)
+```
 
+There are two constraints in the example implicitly:<br>
+operator < (returning bool)<br>
+copy/move constructor<br>
+
+To explicitly define these constraints: Concepts (C++20)
+
+```cpp
 template<typename T>
 concept SupportLessThan = requires (T x) { x < x; };
 
 template<typename T>
 requires std::copyable<T> && SupportLessThan<T>
-…
+```
 
-results in  better, more understandable error messages for templated code
+Results in  better, more understandable error messages for templated code
 template<typename T1, typename T2>
 auto myMax(T1 a, T2 b)
 
 auto a1 = myMax(0.7, 3); // called with different types
 
 the type of the return value is figured out by the compiler at compile time (C++14)
+
 ### Class templates
 
+```cpp
 template<typename T>
 class Stack {
 	std::vector<T> elems;
@@ -52,6 +88,7 @@ class Stack {
 	T top();
 	void print();
 }
+```
 In header files
 no inline needed
 generic member functions are only instantiated if used
@@ -86,3 +123,7 @@ DONT_1: struct to define data structure, allocate struct object, cast it to (cha
 DONT_2: cast (reinterpret_cast) the read buffer data into the struct <-- can be undefined behaviour, see cppreference: reinterpret_cast
 POSIB_1: like reinterpret_cast but with bit_cast (C++20)
 
+## Tervezési minták
+
+### Singleton
+[Example](design_patterns/hetfo/Singleton.cpp)
