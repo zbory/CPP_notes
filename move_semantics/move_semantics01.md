@@ -49,13 +49,13 @@ public:
     }
 }
 ```
-```
-Note:
+
+### Note:
 
 Core Guideline C.66: make move operations **noexcept**.</br></br>
 strong exception safety guarantee: also known as commit or rollback semantics, operations can fail, but failed operations are guaranteed to have no side effects, leaving the original values intact.</br></br>
 
 If a move operation is used in a function F providing the above guarantee - eg: std::vector::push_back - F must have the guarantee that the move operation inside it won't throw an exception so F won't fail and F can satisfy the exception safety guarantee of leaving the parameter object intact in case of fail. If the move operation could throw and exception while also modifying the parameter object the guarantee would be violated. If the move operation is not noexcept, the only way F can guarantee the strong exception safety if it falls back to copying instead of moving (to make sure the original parameter object is left intact in case of fail), so the performance gain from the move semantics is lost.  
-```
+
 
 Core Guideline F.15: [Prefer simple and conventional ways of passing information](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#f15-prefer-simple-and-conventional-ways-of-passing-information)
